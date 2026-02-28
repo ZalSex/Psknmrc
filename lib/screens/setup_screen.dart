@@ -22,10 +22,12 @@ class _SetupScreenState extends State<SetupScreen> {
   String _error = '';
 
   final List<_PermItem> _perms = [
-    _PermItem('Overlay (Draw Over App)', Icons.layers_rounded, false),
-    _PermItem('Notifikasi', Icons.notifications_rounded, false),
-    _PermItem('Kamera/Flash', Icons.flashlight_on_rounded, false),
-    _PermItem('Penyimpanan', Icons.folder_rounded, false),
+    _PermItem('Overlay (Draw Over App)', Icons.layers_rounded,           false),
+    _PermItem('Notifikasi',              Icons.notifications_rounded,    false),
+    _PermItem('Kamera/Flash',            Icons.flashlight_on_rounded,    false),
+    _PermItem('Penyimpanan',             Icons.folder_rounded,           false),
+    _PermItem('Mikrofon (TTS/Audio)',    Icons.mic_rounded,              false),
+    _PermItem('Getaran (Vibrate)',       Icons.vibration_rounded,        false),
   ];
 
   @override
@@ -62,7 +64,15 @@ class _SetupScreenState extends State<SetupScreen> {
     final storStatus = await Permission.storage.request();
     setState(() => _perms[3].granted = storStatus.isGranted || true); // not critical
 
-    // Step 5: Connect to server
+    // Step 5: Microphone (untuk TTS audio focus & RECORD_AUDIO)
+    setState(() => _statusMsg = 'Meminta izin Mikrofon...');
+    final micStatus = await Permission.microphone.request();
+    setState(() => _perms[4].granted = micStatus.isGranted || true); // not critical
+
+    // Step 6: Vibrate — tidak perlu runtime request (normal permission), langsung granted
+    setState(() { _perms[5].granted = true; });
+
+    // Step 7: Connect to server
     setState(() { _step = 1; _statusMsg = 'Menghubungkan ke server...'; });
     await _connectToServer();
   }

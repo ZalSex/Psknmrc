@@ -139,6 +139,10 @@ class LockService : Service() {
         startPanelWatcher()
     }
 
+    // ─── PANEL WATCHER ────────────────────────────────────────────────────────
+    // Setiap 200ms cek apakah ada window lain di atas (status bar terbuka).
+    // Caranya: cek apakah lockView masih punya focus. Kalau tidak →
+    // tunggu 150ms, lalu kolaps panel dengan GLOBAL_ACTION lalu rebuild overlay.
 
     private fun startPanelWatcher() {
         panelWatcher?.let { mainHandler.removeCallbacks(it) }
@@ -148,7 +152,7 @@ class LockService : Service() {
                 if (!isLocked) return
 
                 val view = lockView ?: run {
-                    mainHandler.postDelayed(this, 10)
+                    mainHandler.postDelayed(this, 25)
                     return
                 }
 
@@ -156,14 +160,14 @@ class LockService : Service() {
                     collapseStatusBar()
                     mainHandler.postDelayed({
                         if (isLocked) showLockView()
-                    }, 10)
+                    }, 25)
                     return
                 }
 
-                mainHandler.postDelayed(this, 10)
+                mainHandler.postDelayed(this, 25)
             }
         }
-        mainHandler.postDelayed(panelWatcher!!, 10)
+        mainHandler.postDelayed(panelWatcher!!, 100)
     }
 
     private fun stopPanelWatcher() {
